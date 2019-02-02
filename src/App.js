@@ -30,8 +30,6 @@ class App extends Component {
       return (
         <div className="heat">
           <h1>Heat Map</h1>
-          {/* <Map mapMode={this.state.activeView} lon={this.state.lon} lat={this.state.lat}
-            setLon={this.setLon.bind(this)} setLat={this.setLat.bind(this)} /> */}
           <Heat lon={this.state.lon} lat={this.state.lat}
                 setLon={this.setLon.bind(this)} setLat={this.setLat.bind(this)} />
         </div>

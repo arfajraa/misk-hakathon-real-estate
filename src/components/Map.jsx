@@ -18,7 +18,7 @@ class Map extends Component {
     }
 
     handleMove(event) {
-        this.setState({ center: event.transform.center }, console.log("MAP", event))
+        this.setState({ center: event.transform.center })
         // console.log(event.transform.center);
         this.props.setLon(event.transform.center.lng);
         this.props.setLat(event.transform.center.lat);
@@ -49,7 +49,6 @@ class Map extends Component {
     }
 
     renderMap() {
-        // if (this.props.mapMode === "post") {
         return (
             <MapBox
                 // style="mapbox://styles/mapbox/satellite-v9"
@@ -72,31 +71,6 @@ class Map extends Component {
                 </Layer>
             </MapBox>
         )
-        // }
-        // else if (this.props.mapMode === "heat") {
-        //     return (
-        //         <MapBox
-        //             style="mapbox://styles/mapbox/satellite-v9"
-        //             // style="mapbox://styles/mapbox/basic-v9"
-        //             // style="mapbox://styles/mapbox/streets-v9"
-        //             containerStyle={{
-        //                 height: "50vh",
-        //                 width: "50vw",
-        //                 marginLeft: "20%"
-        //             }}
-        //             center={[this.state.center.lng, this.state.center.lat]}
-        //         >
-        //             <Layer type="heatmap" paint={this.state.layerPaint}>
-        //                 {this.state.data.map((el, index) => {
-        //                     return(
-        //                         <Feature key={index} coordinates={el.latlng} properties={el} />
-        //                     )
-        //                 })
-        //             }
-        //             </Layer>
-        //         </MapBox>
-        //     )
-        // }
     }
 
     render() {

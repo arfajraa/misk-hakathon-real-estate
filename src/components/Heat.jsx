@@ -17,7 +17,6 @@ class Heat extends React.Component {
             // data: { "24.839651107788086,46.66218948364258": 1784.25, "24.658897,46.51532": 1332.21 },
             data: {},
             dataArray: [],
-            done: false,
             layerPaint: {
                 'heatmap-weight': {
                     property: 'priceIndicator',
@@ -60,7 +59,7 @@ class Heat extends React.Component {
     }
 
     handleMove(event) {
-        this.setState({ center: event.transform.center }, console.log("HEAT", event.transform.center))
+        this.setState({ center: event.transform.center })
         // console.log(event.transform.center);
         this.props.setLon(event.transform.center.lng);
         this.props.setLat(event.transform.center.lat);
@@ -72,10 +71,10 @@ class Heat extends React.Component {
         fetch(url)
             .then(response => response.json())
             .then(data => {
-                this.setState({ data: data }, console.log("THE DATA :", data));
+                this.setState({ data: data });
             })
             .then(() => {
-                let sum = 0;
+                // let sum = 0;
                 let min = 0;
                 let max = 0;
                 Object.keys(this.state.data).forEach((current) => {
@@ -91,29 +90,24 @@ class Heat extends React.Component {
                     else if (this.state.data[current] > max) {
                         max = this.state.data[current];
                     }
-                    sum += this.state.data[current];
+                    // sum += this.state.data[current];
                 })
-                let length = Object.keys(this.state.data).length;
-                let avg = sum / length;
-                console.log("SUM: ", sum);
-                console.log("NUM OF POINTS: ", Object.keys(this.state.data).length);
-                console.log("AVG: ", avg);
-                console.log("MIN: ", min);
-                console.log("MAX: ", max);
+                // let length = Object.keys(this.state.data).length;
+                // let avg = sum / length;
+                // console.log("SUM: ", sum);
+                // console.log("NUM OF POINTS: ", Object.keys(this.state.data).length);
+                // console.log("AVG: ", avg);
+                // console.log("MIN: ", min);
+                // console.log("MAX: ", max);
                 const formatted = Object.keys(this.state.data).map(latlng => {
                     let tempArr = latlng.split(',');
-                    // let tempObj = {
-                    //     x: tempArr[1],
-                    //     y: tempArr[0],
-                    //     value: this.state.data[latlng]
-                    // }
                     tempArr.push(((this.state.data[latlng] - min) / (max - min)) * 5);
                     tempArr.push(this.state.data[latlng]);
-                    console.log(((this.state.data[latlng] - min) / (max - min)) * 5)
+                    // console.log(((this.state.data[latlng] - min) / (max - min)) * 5)
                     // console.log(tempArr)
                     return tempArr
                 })
-                this.setState({ dataArray: formatted, done: true })
+                this.setState({ dataArray: formatted })
             })
             .catch(error => {
                 console.log(error);
@@ -123,7 +117,6 @@ class Heat extends React.Component {
     renderMap() {
         return (
             <div>
-
                 <MapBox
                     // style="mapbox://styles/mapbox/satellite-v9"
                     // style="mapbox://styles/mapbox/basic-v9"
@@ -145,8 +138,8 @@ class Heat extends React.Component {
                     </Layer>
                 </MapBox>
                 <div className="heatActions">
-                    <label> Distance around center in KM: <input type="number" min={1} max={10} value={this.state.distance} onChange={(event) => { this.setState({ distance: event.target.value }) }} /> </label> <br/> <br/>
-                    <label> Number of points: <input type="number" min={1} max={100} value={this.state.numOfPoints} onChange={(event) => { this.setState({ numOfPoints: event.target.value }) }} /> </label> <br/> <br/>
+                    <label> Distance around center in KM: <input type="number" min={1} max={10} value={this.state.distance} onChange={(event) => { this.setState({ distance: event.target.value }) }} /> </label> <br /> <br />
+                    <label> Number of points: <input type="number" min={1} max={100} value={this.state.numOfPoints} onChange={(event) => { this.setState({ numOfPoints: event.target.value }) }} /> </label> <br /> <br />
                     <button onClick={(event) => this.handleSubmit(event)}>Generate points in this area.</button>
                 </div>
             </div>
@@ -157,9 +150,7 @@ class Heat extends React.Component {
         return (
             <div className="heatMap">
                 {
-                    // this.state.done ? 
                     this.renderMap()
-                    // : <p>Loading, please wait.</p>
                 }
             </div>
         );
