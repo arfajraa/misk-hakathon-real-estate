@@ -108,6 +108,7 @@ class Heat extends React.Component {
                     //     value: this.state.data[latlng]
                     // }
                     tempArr.push(((this.state.data[latlng] - min) / (max - min)) * 5);
+                    tempArr.push(this.state.data[latlng]);
                     console.log(((this.state.data[latlng] - min) / (max - min)) * 5)
                     // console.log(tempArr)
                     return tempArr
