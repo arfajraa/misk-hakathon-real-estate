@@ -54,7 +54,10 @@ class Heat extends React.Component {
                 }
             },
             distance: 2,
-            numOfPoints: 50
+            numOfPoints: 50,
+            avg: 0,
+            detailedArrayData: [],
+            finalData: []
         }
     }
 
@@ -74,7 +77,7 @@ class Heat extends React.Component {
                 this.setState({ data: data });
             })
             .then(() => {
-                // let sum = 0;
+                let sum = 0;
                 let min = 0;
                 let max = 0;
                 Object.keys(this.state.data).forEach((current) => {
@@ -90,10 +93,11 @@ class Heat extends React.Component {
                     else if (this.state.data[current] > max) {
                         max = this.state.data[current];
                     }
-                    // sum += this.state.data[current];
+                    sum += this.state.data[current];
                 })
-                // let length = Object.keys(this.state.data).length;
-                // let avg = sum / length;
+                let length = Object.keys(this.state.data).length;
+                let avg = sum / length;
+                this.setState({avg})
                 // console.log("SUM: ", sum);
                 // console.log("NUM OF POINTS: ", Object.keys(this.state.data).length);
                 // console.log("AVG: ", avg);

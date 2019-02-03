@@ -13,7 +13,8 @@ class Map extends Component {
                 lng: props.lon,
                 lat: props.lat
             },
-            fetchedData: null
+            fetchedPrice: null,
+            fetchedInfo: null
         }
     }
 
@@ -26,26 +27,35 @@ class Map extends Component {
 
     handleSubmit(event) {
         event.preventDefault();
-
-        const url = `http://54.183.197.3/predictprice?lat=${this.state.center.lat}&lng=${this.state.center.lng}`
-        fetch(url)
+        const infoUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${this.state.center.lng},${this.state.center.lat}.json?access_token=pk.eyJ1IjoiZ290aGFtZXkiLCJhIjoiY2pxejRzMjVhMDlyZjQ1bGh4ZHdzaXkzMyJ9.3nRJUHgfnPtcOJvi9q06hw`
+        const priceUrl = `http://54.183.197.3/predictprice?lat=${this.state.center.lat}&lng=${this.state.center.lng}`
+        fetch(infoUrl)
             .then(response => response.json())
-            .then(data => {
-                this.setState({ fetchedData: data });
-            })
+            .then(data => this.setState({fetchedInfo: data.features[0].place_name}))
+            .catch(error => console.log(error));
+
+        fetch(priceUrl)
+            .then(response => response.json())
+            .then(data => this.setState({ fetchedPrice: data }))
             .then(() => this.renderInfo())
-            .catch(error => {
-                console.log(error);
-            })
+            .catch(error => console.log(error));
     }
 
     renderInfo() {
-        if (this.state.fetchedData) {
-            document.getElementById("infoContent").innerHTML = `Estimated m² Price: SAR ${this.state.fetchedData.meter_price}`;
+        if (this.state.fetchedPrice) {
+            document.getElementById("priceInfo").innerHTML = `Estimated m² Price: SAR ${this.state.fetchedPrice.meter_price}`;
         }
         else {
-            document.getElementById("infoContent").innerHTML = `No Estimation for specified point.`
+            document.getElementById("priceInfo").innerHTML = `No Estimation for specified point.`
         }
+
+        if (this.state.fetchedInfo) {
+            document.getElementById("nameInfo").innerHTML = `Place Name: ${this.state.fetchedInfo}`;
+        }
+        else {
+            document.getElementById("nameInfo").innerHTML = `Unknown place name.`
+        }
+
     }
 
     renderMap() {
@@ -78,11 +88,12 @@ class Map extends Component {
             <div className="mapWrapper">
                 {this.renderMap()}
                 <div className="pointActions">
-                    <label> Longitude: <input type="text" disabled value={this.state.center.lng} /></label> <br/> <br/>
-                    <label> Latitude: <input type="text" disabled value={this.state.center.lat} /></label> <br/> <br/>
+                    <label> Longitude: <input type="text" disabled value={this.state.center.lng} /></label> <br /> <br />
+                    <label> Latitude: <input type="text" disabled value={this.state.center.lat} /></label> <br /> <br />
                     <button onClick={(event) => this.handleSubmit(event)}>Get Info</button>
                     <div id="info">
-                        <p id="infoContent"></p>
+                        <p id="nameInfo"></p>
+                        <p id="priceInfo"></p>
                     </div>
                 </div>
             </div>
