@@ -97,7 +97,7 @@ class Heat extends React.Component {
                 })
                 let length = Object.keys(this.state.data).length;
                 let avg = sum / length;
-                this.setState({avg})
+                this.setState({ avg })
                 // console.log("SUM: ", sum);
                 // console.log("NUM OF POINTS: ", Object.keys(this.state.data).length);
                 // console.log("AVG: ", avg);
@@ -111,7 +111,8 @@ class Heat extends React.Component {
                     // console.log(tempArr)
                     return tempArr
                 })
-                this.setState({ dataArray: formatted })
+                this.setState({ dataArray: formatted });
+                this.assignDetailedData();
             })
             .catch(error => {
                 console.log(error);
@@ -148,6 +149,64 @@ class Heat extends React.Component {
                 </div>
             </div>
         )
+    }
+
+    assignDetailedData() {
+
+        this.state.dataArray.map((el) => {
+            this.fetchData(el)
+        })
+    }
+
+    fetchData(dData) {
+        const token = 'pk.eyJ1IjoiZ290aGFtZXkiLCJhIjoiY2pxejRzMjVhMDlyZjQ1bGh4ZHdzaXkzMyJ9.3nRJUHgfnPtcOJvi9q06hw'
+        const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${dData[1]},${dData[0]}.json?access_token=${token}`
+        fetch(url)
+            .then(response => response.json())
+            .then(d => {
+                let obj = {};
+                obj.name = d.features[0].context[0].text
+                obj.lat = dData[0]
+                obj.long = dData[1]
+                obj.price = dData[3]
+                console.log(obj)
+                this.state.detailedArrayData.push(obj);
+
+                const uniquePlaces = {};
+
+                this.state.detailedArrayData.forEach(o => {
+                    if (!uniquePlaces[o['name']]) {
+                        uniquePlaces[o['name']] = 1;
+                    } else {
+                        uniquePlaces[o['name']] += 1;
+                    }
+                })
+                console.log(uniquePlaces);
+                let finalData = [];
+                Object.keys(uniquePlaces).forEach((uni) => {
+                    let collectData = this.state.detailedArrayData.filter((dd) => {
+                        return dd.name === uni;
+                    })
+                    console.log(collectData);
+                    let total = collectData.reduce((accum, curr) => {
+                        return accum += curr.price
+                    }, 0)
+                    console.log(total);
+
+                    let fd = {
+                        name: uni,
+                        totalPrice: total,
+                        numberOfPoint: uniquePlaces[uni],
+                        ave: total / uniquePlaces[uni]
+                    }
+
+                    finalData.push(fd)
+                })
+                console.log("FINALDATA: ", finalData)
+                this.setState({ finalData: finalData })
+
+            })
+
     }
 
     render() {
