@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactMapboxGl, { Layer, Feature } from "react-mapbox-gl";
+import ReactChartkick, { ColumnChart } from 'react-chartkick'
+import Chart from 'chart.js'
 
 const MapBox = ReactMapboxGl({
     accessToken: "pk.eyJ1IjoiZ290aGFtZXkiLCJhIjoiY2pxejRzMjVhMDlyZjQ1bGh4ZHdzaXkzMyJ9.3nRJUHgfnPtcOJvi9q06hw"
@@ -38,15 +40,15 @@ class Heat extends React.Component {
                     0,
                     'rgba(33,102,172,0)',
                     0.25,
-                    'rgb(103,169,207)',
+                    'rgba(103,169,207,0.7)',
                     0.5,
-                    'rgb(209,229,240)',
+                    'rgba(209,229,240,0.7)',
                     0.8,
-                    'rgb(253,219,199)',
+                    'rgba(253,219,199,0.7)',
                     1,
-                    'rgb(239,138,98)',
+                    'rgba(239,138,98,0.7)',
                     2,
-                    'rgb(178,24,43)'
+                    'rgba(178,24,43,0.7)'
                 ],
                 // Adjust the heatmap radius by zoom level
                 'heatmap-radius': {
@@ -169,7 +171,7 @@ class Heat extends React.Component {
                 obj.lat = dData[0]
                 obj.long = dData[1]
                 obj.price = dData[3]
-                console.log(obj)
+                // console.log(obj)
                 this.state.detailedArrayData.push(obj);
 
                 const uniquePlaces = {};
@@ -181,28 +183,23 @@ class Heat extends React.Component {
                         uniquePlaces[o['name']] += 1;
                     }
                 })
-                console.log(uniquePlaces);
+                // console.log(uniquePlaces);
                 let finalData = [];
                 Object.keys(uniquePlaces).forEach((uni) => {
                     let collectData = this.state.detailedArrayData.filter((dd) => {
                         return dd.name === uni;
                     })
-                    console.log(collectData);
+                    // console.log(collectData);
                     let total = collectData.reduce((accum, curr) => {
                         return accum += curr.price
                     }, 0)
-                    console.log(total);
+                    // console.log(total);
 
-                    let fd = {
-                        name: uni,
-                        totalPrice: total,
-                        numberOfPoint: uniquePlaces[uni],
-                        ave: total / uniquePlaces[uni]
-                    }
+                    let arr = [uni, (total / uniquePlaces[uni]).toFixed(2)]
 
-                    finalData.push(fd)
+                    finalData.push(arr)
                 })
-                console.log("FINALDATA: ", finalData)
+                // console.log("FINALDATA: ", finalData)
                 this.setState({ finalData: finalData })
 
             })
@@ -212,9 +209,19 @@ class Heat extends React.Component {
     render() {
         return (
             <div className="heatMap">
-                {
-                    this.renderMap()
+
+                {this.renderMap()}
+                <br />
+
+                {this.state.finalData.length > 0 ?
+                    <div>
+                        <h1>Average m² Price By District</h1>
+                        <ColumnChart data={this.state.finalData} min={0} max={2000} />
+                        <h3>Average for All Selected Points: SAR {(this.state.avg).toFixed(2)}</h3>
+                    </div>
+                    : ''
                 }
+
             </div>
         );
     }
